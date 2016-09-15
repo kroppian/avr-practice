@@ -52,20 +52,6 @@ int clicked(int player){
   }
   return 0;
 
-  if (bit_is_clear(PINC,player))
-    return 1;
-  else 
-    return 0; 
-
-  /*if(! btn_pressed[player] && bit_is_clear(PINC,player)){
-    // Mark that the button is pressed
-    btn_pressed[player] = 1; 
-    // clear the streak
-    return 1;
-  } else if (! bit_is_clear(PINC,player)){
-    btn_pressed[player] = 0; 
-    return 0;
-  } */
 }
 
 
@@ -99,7 +85,6 @@ int main(void)
 
     //if(clicked(PINC0)){
     if(clicked(PINC0)){
-      //PORTB &= (0xFF << 1);
       PORTB = path[p0_pos % goal];
       p0_pos++;
       //for(i = 0; i < 4; i++) 
@@ -108,7 +93,6 @@ int main(void)
     }
 
     if(clicked(PINC1)){
-      //PORTD &= (0xFF << 1);
       PORTD = path[p1_pos % goal];
       p1_pos++;
       //for(i = 0; i < 4; i++) 
