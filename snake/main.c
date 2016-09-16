@@ -1,8 +1,11 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#define PLAYER1 0
+#define PLAYER2 1
+
 char path[] = {
-  ~(1 << PINB0),
+  ~(1 << PINB0), // 11111110
   ~(1 << PINB1),
   ~(1 << PINB2),
   ~(1 << PINB3),
@@ -14,9 +17,9 @@ short btn_pressed[2] = {0,0};
 short conf_level[2] = {500,0};
 short curr_conf[2] = {0,0};
 
-int flash(int player){
+int flash(short player){
 
-  short delay = 500;
+  short delay = 200;
 
   _delay_ms(delay/2);
   if (player == 0)
@@ -58,58 +61,69 @@ int clicked(int player){
 int main(void)
 {
 
-  // Turn on the two buttons on port C as input
+  // Turn on the first two buttons on port C as input
   DDRC &= ~(1 << PINC0);
   DDRC &= ~(1 << PINC1);
-  // Turn on the two buttons on port C to a hight threshold
+  // Turn on the first two buttons on port C to a hight threshold
   PORTC |= (1 << PINC0);
   PORTC |= (1 << PINC1);
-  
+ 
+  // set the start lights to output
+  DDRC |= (1 << PINC2);
+  DDRC |= (1 << PINC3);
+  DDRC |= (1 << PINC4);
+
   // turn on pins 0 through 5 for port B as output
   DDRB |= 0xFF >> 2;
   // turn on pins 0 through 5 for port D as output
   DDRD |= 0xFF >> 2;
 
-  // set the initial states 
-  //PORTB &= 0xFF >> 2;
-  PORTB |= 0xFF >> 2;  
-  // set the initial states 
-  PORTD |= 0xFF >> 2;  
+  // 0 & 0 -> 1
+  // 1 & 0 -> 0
+  short goal;
+  short win;
+  short position[2];
+  while(1){
 
-  short goal = 6;
-  short p0_pos = 0;
-  short p1_pos = 0;
+    // set the initial states 
+    PORTB |= 0xFF >> 2;  
+    // set the initial states 
+    PORTD |= 0xFF >> 2;  
 
-  int i;
-  while(1) { 
+    // start the game over
+    goal = 6;
+    win = 0;
+    position[PLAYER1] = 0;
+    position[PLAYER2] = 0;
 
-    //if(clicked(PINC0)){
-    if(clicked(PINC0)){
-      PORTB = path[p0_pos % goal];
-      p0_pos++;
-      if (p0_pos == goal){
-        for(i = 0; i < 4; i++) 
-          flash(0);
-        p0_pos = 0;
-        p1_pos = 0;
-        PORTB |= (0xFF >> 2);
-        PORTD |= (0xFF >> 2);
+    int i;
+    while(! win) { 
+
+      if(clicked(PLAYER1)){
+        // wipe the board
+        PORTB |= 0xFF >> 2;
+        // set the new position
+        PORTB &= path[position[PLAYER1]];
+        position[PLAYER1]++;
+        if (position[PLAYER1] == goal){
+          for(i = 0; i < 8; i++) flash(PLAYER1);
+          win = 1;
+        }
       }
-    }
 
-    if(clicked(PINC1)){
-      PORTD = path[p1_pos % goal];
-      p1_pos++;
-      if (p1_pos == goal){
-        for(i = 1; i < 4; i++) 
-          flash(1);
-        p0_pos = 0;
-        p1_pos = 0;
-        PORTB |= (0xFF >> 2);
-        PORTD |= (0xFF >> 2);
+      if(clicked(PLAYER2)){
+        // wipe the board
+        PORTD |= 0xFF >> 2;
+        // set the new position
+        PORTD &= path[position[PLAYER2]];
+        position[PLAYER2]++;
+        if (position[PLAYER2] == goal){
+          for(i = 1; i < 8; i++) flash(PLAYER2);
+          win = 1;
+        }
       }
-    }
 
+    }
   }
 
 }
