@@ -66,15 +66,15 @@ int main(void)
   PORTC |= (1 << PINC1);
   
   // turn on pins 0 through 5 for port B as output
-  DDRB |= 0b00111111;
+  DDRB |= 0xFF >> 2;
   // turn on pins 0 through 5 for port D as output
-  DDRD |= 0b00111111;
+  DDRD |= 0xFF >> 2;
 
   // set the initial states 
   //PORTB &= 0xFF >> 2;
-  PORTB |= 0b00111111;
+  PORTB |= 0xFF >> 2;  
   // set the initial states 
-  PORTD |= 0b00111111;
+  PORTD |= 0xFF >> 2;  
 
   short goal = 6;
   short p0_pos = 0;
@@ -87,23 +87,32 @@ int main(void)
     if(clicked(PINC0)){
       PORTB = path[p0_pos % goal];
       p0_pos++;
-      //for(i = 0; i < 4; i++) 
-      //  flash(0);
-
+      if (p0_pos == goal){
+        for(i = 0; i < 4; i++) 
+          flash(0);
+        p0_pos = 0;
+        p1_pos = 0;
+        PORTB |= (0xFF >> 2);
+        PORTD |= (0xFF >> 2);
+      }
     }
 
     if(clicked(PINC1)){
       PORTD = path[p1_pos % goal];
       p1_pos++;
-      //for(i = 0; i < 4; i++) 
-        //flash(1);
+      if (p1_pos == goal){
+        for(i = 1; i < 4; i++) 
+          flash(1);
+        p0_pos = 0;
+        p1_pos = 0;
+        PORTB |= (0xFF >> 2);
+        PORTD |= (0xFF >> 2);
+      }
     }
 
   }
 
 }
-
-
 
 
 
