@@ -73,16 +73,59 @@ int main(void)
   DDRC |= (1 << PINC3);
   DDRC |= (1 << PINC4);
 
+  // Clean out the output register reigsters
+  PORTC |= (1 << PINC2);
+  PORTC |= (1 << PINC3);
+  PORTC |= (1 << PINC4);
+
+  short position[2];
+  position[PLAYER1] = 0;
+  position[PLAYER2] = 0;
+  short started = 0;
+  short goal = 6;
+
   // turn on pins 0 through 5 for port B as output
   DDRB |= 0xFF >> 2;
   // turn on pins 0 through 5 for port D as output
   DDRD |= 0xFF >> 2;
 
+  while ( ! started ) {
+
+    _delay_ms(200);
+
+    // wipe player one's board
+    PORTB |= 0xFF >> 2;
+    // set the new position
+    PORTB &= path[position[PLAYER1] % goal];
+
+    // wipe player one's board
+    PORTD |= 0xFF >> 2;
+    // set the new position
+    PORTD &= path[position[PLAYER2] % goal];
+
+    if(clicked(PLAYER1) || clicked(PLAYER2)) 
+      started = 1;
+
+    position[PLAYER1]++;
+    position[PLAYER2]++;
+
+
+  }
+
+  PORTC &= ~(1 << PINC2);
+  _delay_ms(800);
+  PORTC |= 1 << PINC2;
+  PORTC &= ~(1 << PINC3);
+  _delay_ms(800);
+  PORTC |= 1 << PINC3;
+  PORTC &= ~(1 << PINC4);
+  _delay_ms(800);
+  PORTC |= 1 << PINC4;
+  
   // 0 & 0 -> 1
   // 1 & 0 -> 0
-  short goal;
   short win;
-  short position[2];
+
   while(1){
 
     // set the initial states 
@@ -91,13 +134,12 @@ int main(void)
     PORTD |= 0xFF >> 2;  
 
     // start the game over
-    goal = 6;
     win = 0;
     position[PLAYER1] = 0;
     position[PLAYER2] = 0;
 
     int i;
-    while(! win) { 
+    while( ! win ) { 
 
       if(clicked(PLAYER1)){
         // wipe the board
