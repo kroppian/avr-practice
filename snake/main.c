@@ -14,7 +14,7 @@ char path[] = {
   };
 
 short btn_pressed[2] = {0,0};
-short conf_level[2] = {500,0};
+short conf_level[2] = {500,500};
 short curr_conf[2] = {0,0};
 
 int flash(short player){
@@ -100,13 +100,19 @@ int main(void)
     // set the initial states 
     PORTD |= 0xFF >> 2;  
 
-
+    int i;
 
     started = 0;
 
     while ( ! started ) {
 
-      _delay_ms(200);
+      for (i = 0; i < 200; i++){
+        _delay_ms(1);
+        if(clicked(PLAYER1) || clicked(PLAYER2)) {
+          started = 1;
+          break;
+        }
+      }
 
       // wipe player one's board
       PORTB |= 0xFF >> 2;
@@ -147,7 +153,6 @@ int main(void)
     position[PLAYER1] = 0;
     position[PLAYER2] = 0;
 
-    int i;
     while( ! win ) { 
 
       if(clicked(PLAYER1)){
