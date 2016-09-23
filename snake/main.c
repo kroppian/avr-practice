@@ -1,8 +1,11 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#define PLAYER1 0
+#define PLAYER2 1
+
 char path[] = {
-  ~(1 << PINB0),
+  ~(1 << PINB0), // 11111110
   ~(1 << PINB1),
   ~(1 << PINB2),
   ~(1 << PINB3),
@@ -11,12 +14,12 @@ char path[] = {
   };
 
 short btn_pressed[2] = {0,0};
-short conf_level[2] = {500,0};
+short conf_level[2] = {500,500};
 short curr_conf[2] = {0,0};
 
-int flash(int player){
+int flash(short player){
 
-  short delay = 500;
+  short delay = 200;
 
   _delay_ms(delay/2);
   if (player == 0)
@@ -58,52 +61,128 @@ int clicked(int player){
 int main(void)
 {
 
-  // Turn on the two buttons on port C as input
+  // Turn on the first two buttons on port C as input
   DDRC &= ~(1 << PINC0);
   DDRC &= ~(1 << PINC1);
-  // Turn on the two buttons on port C to a hight threshold
+  // Turn on the first two buttons on port C to a hight threshold
   PORTC |= (1 << PINC0);
   PORTC |= (1 << PINC1);
-  
-  // turn on pins 0 through 5 for port B as output
-  DDRB |= 0b00111111;
-  // turn on pins 0 through 5 for port D as output
-  DDRD |= 0b00111111;
+ 
+  // set the start lights to output
+  DDRC |= (1 << PINC2);
+  DDRC |= (1 << PINC3);
+  DDRC |= (1 << PINC4);
 
-  // set the initial states 
-  //PORTB &= 0xFF >> 2;
-  PORTB |= 0b00111111;
-  // set the initial states 
-  PORTD |= 0b00111111;
+  // Clean out the output register reigsters
+  PORTC |= (1 << PINC2);
+  PORTC |= (1 << PINC3);
+  PORTC |= (1 << PINC4);
 
+  short position[2];
+  position[PLAYER1] = 0;
+  position[PLAYER2] = 0;
+  short started;
   short goal = 6;
-  short p0_pos = 0;
-  short p1_pos = 0;
 
-  int i;
-  while(1) { 
+  // turn on pins 0 through 5 for port B as output
+  DDRB |= 0xFF >> 2;
+  // turn on pins 0 through 5 for port D as output
+  DDRD |= 0xFF >> 2;
+  
+  // 0 & 0 -> 1
+  // 1 & 0 -> 0
+  short win;
 
-    //if(clicked(PINC0)){
-    if(clicked(PINC0)){
-      PORTB = path[p0_pos % goal];
-      p0_pos++;
-      //for(i = 0; i < 4; i++) 
-      //  flash(0);
+  while(1){
+    
+    // set the initial states 
+    PORTB |= 0xFF >> 2;  
+    // set the initial states 
+    PORTD |= 0xFF >> 2;  
+
+    int i;
+
+    started = 0;
+
+    while ( ! started ) {
+
+      for (i = 0; i < 200; i++){
+        _delay_ms(1);
+        if(clicked(PLAYER1) || clicked(PLAYER2)) {
+          started = 1;
+          break;
+        }
+      }
+
+      // wipe player one's board
+      PORTB |= 0xFF >> 2;
+      // set the new position
+      PORTB &= path[position[PLAYER1] % goal];
+
+      // wipe player one's board
+      PORTD |= 0xFF >> 2;
+      // set the new position
+      PORTD &= path[position[PLAYER2] % goal];
+
+      if(clicked(PLAYER1) || clicked(PLAYER2)) 
+        started = 1;
+
+      position[PLAYER1]++;
+      position[PLAYER2]++;
 
     }
 
-    if(clicked(PINC1)){
-      PORTD = path[p1_pos % goal];
-      p1_pos++;
-      //for(i = 0; i < 4; i++) 
-        //flash(1);
-    }
+    PORTC &= ~(1 << PINC2);
+    _delay_ms(800);
+    PORTC |= 1 << PINC2;
+    PORTC &= ~(1 << PINC3);
+    _delay_ms(800);
+    PORTC |= 1 << PINC3;
+    PORTC &= ~(1 << PINC4);
+    _delay_ms(400);
+    PORTC |= 1 << PINC4;
 
+    
+    // set the initial states 
+    PORTB |= 0xFF >> 2;  
+    // set the initial states 
+    PORTD |= 0xFF >> 2;  
+
+    // start the game over
+    win = 0;
+    position[PLAYER1] = 0;
+    position[PLAYER2] = 0;
+
+    while( ! win ) { 
+
+      if(clicked(PLAYER1)){
+        // wipe the board
+        PORTB |= 0xFF >> 2;
+        // set the new position
+        PORTB &= path[position[PLAYER1]];
+        position[PLAYER1]++;
+        if (position[PLAYER1] == goal){
+          for(i = 0; i < 8; i++) flash(PLAYER1);
+          win = 1;
+        }
+      }
+
+      if(clicked(PLAYER2)){
+        // wipe the board
+        PORTD |= 0xFF >> 2;
+        // set the new position
+        PORTD &= path[position[PLAYER2]];
+        position[PLAYER2]++;
+        if (position[PLAYER2] == goal){
+          for(i = 1; i < 8; i++) flash(PLAYER2);
+          win = 1;
+        }
+      }
+
+    }
   }
 
 }
-
-
 
 
 
