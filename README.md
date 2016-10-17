@@ -4,6 +4,7 @@
 
 * avrdude
 * avr-gcc
+* avr-libc
 
 ## Testing out your AVR connection
 
