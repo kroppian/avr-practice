@@ -39,13 +39,27 @@ int main(void)
   send_a_command(0b00001110); //
   _delay_us(50);
 
-  send_a_string("Num: ");
-  send_a_num(100);
-  send_a_string(" ");
-  send_a_num(0);
-  send_a_string(" ");
-  send_a_num(387);
-  while(1){}
+  int i;
+  while(1){
+
+    for(i = 0; i < 82; i++){
+     
+      send_a_command(0b10000000 + i); 
+      send_a_string("x");
+      
+      send_a_command(0b10000000 + 3); 
+      send_a_num(i); 
+
+      _delay_ms(100);
+      
+      send_a_command(0b10000000 + i);
+      send_a_string(" ");
+
+      send_a_command(0b10000000 + 3); 
+      send_a_num(i); 
+    }    
+
+  }
 
 }
 
