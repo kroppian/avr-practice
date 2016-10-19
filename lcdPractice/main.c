@@ -1,6 +1,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdlib.h>
 
 #define MrLCDsCrib      PORTB
 #define MrLCDsControl   PORTD
@@ -15,7 +16,8 @@ void check_if_mr_lcd_is_busy(void);
 void peek_a_boo(void);
 void send_a_command(unsigned char command);
 void send_a_character(unsigned char character);
-void send_a_string(unsigned  char * message);
+void send_a_string(char * message);
+void send_a_num(unsigned int num);
 
 int main(void)
 {
@@ -37,22 +39,12 @@ int main(void)
   send_a_command(0b00001110); //
   _delay_us(50);
 
-
-  /*send_a_character(0x48); // H
-  send_a_character(0x65); // e
-  send_a_character(0x6C); // l
-  send_a_character(0x6C); // l
-  send_a_character(0x6F); // o
-  send_a_character(0x20); //
-  send_a_character(0x77); // w
-  send_a_character(0x6F); // o
-  send_a_character(0x72); // r
-  send_a_character(0x6C); // l
-  send_a_character(0x64); // d
-  send_a_character(0x21); // !
-  send_a_character(0x21); // !
-  send_a_character(0x21); // !*/
-  send_a_string("Hello Kaitlyn!");
+  send_a_string("Num: ");
+  send_a_num(100);
+  send_a_string(" ");
+  send_a_num(0);
+  send_a_string(" ");
+  send_a_num(387);
   while(1){}
 
 }
@@ -108,7 +100,7 @@ void check_if_mr_lcd_is_busy(){
 
 }
 
-void send_a_string(unsigned char *  message){
+void send_a_string(char *  message){
 
   unsigned short pos = 0;
 
@@ -121,4 +113,37 @@ void send_a_string(unsigned char *  message){
   }
 
 }
+
+int count_places(int num){
+
+  if(num == 0) return 0;
+
+  return count_places(num / 10) + 1;
+
+}
+
+void send_a_num(unsigned int num){
+
+  if(num == 0) return "0\0";
+
+  int number_of_places = count_places(num);
+ 
+  //                                            | for the end of string
+  char * num_string = malloc(number_of_places + 1);
+  num_string[number_of_places] = '\0';
+  while(number_of_places > 0){
+
+
+    num_string[number_of_places - 1] = ((num % 10) + 48);
+
+    num /= 10;
+
+    number_of_places--;  
+  
+  }
+
+  send_a_string(num_string);
+
+}
+
 
