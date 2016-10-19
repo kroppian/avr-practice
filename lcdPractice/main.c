@@ -18,6 +18,7 @@ void send_a_command(unsigned char command);
 void send_a_character(unsigned char character);
 void send_a_string(char * message);
 void send_a_num(unsigned int num);
+void go_to_lcd_position(unsigned int x, unsigned int y);
 
 int main(void)
 {
@@ -42,23 +43,20 @@ int main(void)
   int i;
   while(1){
 
-    for(i = 0; i < 82; i++){
-     
-      send_a_command(0b10000000 + i); 
-      send_a_string("x");
-      
-      send_a_command(0b10000000 + 3); 
-      send_a_num(i); 
 
-      _delay_ms(100);
-      
-      send_a_command(0b10000000 + i);
+    for(i = 0; i < 32; i++){
+
+      go_to_lcd_position(i % 16, (i >= 16));
+      send_a_string("x");
+
+      _delay_ms(200);
+     
+      go_to_lcd_position(i % 16, (i >= 16));
       send_a_string(" ");
 
-      send_a_command(0b10000000 + 3); 
-      send_a_num(i); 
-    }    
-
+    
+    }
+        
   }
 
 }
@@ -158,6 +156,14 @@ void send_a_num(unsigned int num){
 
   send_a_string(num_string);
 
+}
+
+void go_to_lcd_position(unsigned int x, unsigned int y){
+
+  if (y < 0 || y > 1 || x < 0 || x > 15) return; 
+
+  send_a_command(0b10000000 + (y * 64) + x);
+  
 }
 
 
