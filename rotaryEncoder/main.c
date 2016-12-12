@@ -3,9 +3,9 @@
 #include <util/delay.h>
 #include <stdlib.h>
 
+
 #define BTN_COUNT 2
 #define CONFIDENCE 1
-
 
 #include "liblcd.h"
 #include "libbtn.h"
@@ -29,7 +29,7 @@ int main(void)
   while(1){
 
     // if the thing is turning 
-    if(pressed(PINC,PINC1,0)){
+    if(pressed(PINC,PINC0,2)){
     
       myNum++; 
       // Flip the light
@@ -44,24 +44,20 @@ int main(void)
 
   }
 
-  /*int i;
-  while(1){
-
-
-    for(i = 0; i < 32; i++){
-
-      go_to_lcd_position(i % 16, (i >= 16));
-      send_a_string("x");
-
-      _delay_ms(200);
-     
-      go_to_lcd_position(i % 16, (i >= 16));
-      send_a_string(" ");
-
-    
-    }
-        
-  }*/
+  // Idealy
+  //
+  // initialize_encoder(PORT1, PIN1, PORT2, PIN2);
+  //
+  // while(1){
+  //
+  //  if(rotating_clockwise()){
+  //
+  //  } else if(rotating_counterclockwise) {
+  //
+  //
+  //  }
+  //
+  // }
 
   
 

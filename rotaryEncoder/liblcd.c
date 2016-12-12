@@ -1,5 +1,5 @@
 
-#include "lcdlib.h"
+#include "liblcd.h"
 
 
 void initialize_lcd(void){

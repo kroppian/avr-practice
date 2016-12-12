@@ -8,7 +8,7 @@
 MCU = atmega328p
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c lcdlib.c
+SRC = $(TARGET).c liblcd.c libbtn.c
 ASRC = 
 OPT = s
 
