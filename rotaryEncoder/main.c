@@ -9,8 +9,6 @@ int main(void)
 {
 
   DDRC |= 1 << PINC2;
-  DDRC &= (1 << PINC1);
-  DDRC &= (1 << PINC0);
   
   int myNum = 0;
 
@@ -19,10 +17,15 @@ int main(void)
   initialize_rot(DDRC, PORTC, PINC1, DDRC, PORTC, PINC0);
 
   send_a_string("Hello again, Ian");
-  go_to_lcd_position(0,1);
-  send_a_num(myNum);
 
   while(1){
+
+
+    if(rotating()){
+      PORTC |= (1 << PINC2);  
+    }else{
+      PORTC &= ~(1 << PINC2);  
+    }
 
   }
 

@@ -7,8 +7,20 @@
 // 2 for right
 unsigned short state;
 
-int initialize_rot(int data_dira, int porta, int pina, 
-    int data_dirb, int portb, int pinb){
+int porta;
+int pina;
+int portb;
+int pinb;
+
+void initialize_rot(int data_dira, int new_porta, int new_pina, 
+    int data_dirb, int new_portb, int new_pinb){
+
+  state = 0;
+
+  porta = new_porta;
+  pina = new_pina;
+  portb = new_portb;
+  pinb = new_pinb;
 
   sei();
 
@@ -27,27 +39,28 @@ int initialize_rot(int data_dira, int porta, int pina,
 
   OCR1A = 100;
 
-  return 0;
-
 }
 
 
 int rotating(){
 
-  return 0;
-
-}
-
-void poll(){
-
-  PORTC ^= (1 << PINC2);
+  return state;
 
 }
 
 // interup service routine
 ISR(TIMER1_COMPA_vect){
 
-  poll();
+  /*if(state)
+    state = 0;
+  else 
+    state = 1;*/
+
+  if(bit_is_clear(PINC,PINC1)) {
+    state = 1;
+  }else{
+    state = 0;
+  }
 
 }
 

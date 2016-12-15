@@ -100,7 +100,7 @@ int count_places(int num){
 
 void send_a_num(unsigned int num){
 
-  if(num == 0) return "0\0";
+  if(num == 0) send_a_string("0");
 
   int number_of_places = count_places(num);
  
