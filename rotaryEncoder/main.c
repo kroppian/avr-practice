@@ -3,13 +3,7 @@
 #include <util/delay.h>
 #include <stdlib.h>
 
-
-#define BTN_COUNT 2
-#define CONFIDENCE 1
-
 #include "liblcd.h"
-#include "libbtn.h"
-
 
 int main(void)
 {
@@ -22,25 +16,13 @@ int main(void)
 
   initialize_lcd();
 
+  initialize_rot(DDRC, PORTC, PINC1, DDRC, PORTC, PINC0);
+
   send_a_string("Hello again, Ian");
   go_to_lcd_position(0,1);
   send_a_num(myNum);
 
   while(1){
-
-    // if the thing is turning 
-    if(pressed(PINC,PINC0,2)){
-    
-      myNum++; 
-      // Flip the light
-      PORTC ^= 1 << PINC2;
-
-      // increase the number
-      go_to_lcd_position(0,1);
-      send_a_num(myNum);
-
-    }
-
 
   }
 
