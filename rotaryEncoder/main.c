@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "liblcd.h"
+#include "librot.h"
 
 int main(void)
 {
@@ -16,35 +17,20 @@ int main(void)
 
   initialize_rot(DDRC, PORTC, PINC1, DDRC, PORTC, PINC0);
 
-  send_a_string("Hello again, Ian");
+  send_a_string("Hello Daniel!");
 
   while(1){
 
 
-    if(rotating()){
-      PORTC |= (1 << PINC2);  
-    }else{
-      PORTC &= ~(1 << PINC2);  
+    if(rotating() == LEFT){
+      go_to_lcd_position(0,1);
+      send_a_string("left ");
+    }else if(rotating() == RIGHT){
+      go_to_lcd_position(0,1);
+      send_a_string("right");
     }
 
   }
-
-  // Idealy
-  //
-  // initialize_encoder(PORT1, PIN1, PORT2, PIN2);
-  //
-  // while(1){
-  //
-  //  if(rotating_clockwise()){
-  //
-  //  } else if(rotating_counterclockwise) {
-  //
-  //
-  //  }
-  //
-  // }
-
-  
 
 }
 

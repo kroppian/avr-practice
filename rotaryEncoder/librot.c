@@ -2,6 +2,7 @@
 #include "librot.h"
 #include <avr/interrupt.h>  
 
+
 // 0 for left 
 // 1 for no rotation
 // 2 for right
@@ -51,15 +52,16 @@ int rotating(){
 // interup service routine
 ISR(TIMER1_COMPA_vect){
 
-  /*if(state)
-    state = 0;
-  else 
-    state = 1;*/
+  int A = bit_is_clear(PINC,PINC1);
+  int B = bit_is_clear(PINC,PINC0);
 
-  if(bit_is_clear(PINC,PINC1)) {
-    state = 1;
-  }else{
-    state = 0;
+
+  if ( ! A && ! B ){
+    state = NO_ROT;
+  } else if (state == NO_ROT && A){
+    state = RIGHT;
+  } else if (state == NO_ROT && B){
+    state = LEFT; 
   }
 
 }
