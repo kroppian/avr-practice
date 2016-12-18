@@ -8,30 +8,24 @@
 // 2 for right
 unsigned short state;
 
-int porta;
+unsigned short pin_set_a;
+unsigned short pin_set_b;
+
 int pina;
-int portb;
 int pinb;
 
-void initialize_rot(int data_dira, int new_porta, int new_pina, 
-    int data_dirb, int new_portb, int new_pinb){
+void initialize_rot(int new_pin_seta, int new_pina, 
+     int new_pin_setb, int new_pinb){
+
+  pin_set_a = new_pin_seta;
+  pin_set_b = new_pin_setb;
 
   state = 0;
 
-  porta = new_porta;
   pina = new_pina;
-  portb = new_portb;
   pinb = new_pinb;
 
   sei();
-
-  // Temporary 
-  DDRC |= 1 << PINC2;
-  PORTC &= ~(1 << PINC2);
-  // End temporary 
- 
-  data_dira &= (1 << pina);
-  data_dirb &= (1 << pinb);
 
   //     ---- 64 prescaler ------  waveform generation mode
   TCCR1B |= 1 << CS10 | 1 << CS11 | 1<<WGM12;
@@ -42,19 +36,37 @@ void initialize_rot(int data_dira, int new_porta, int new_pina,
 
 }
 
+int get_pins(int set){
+  
+  int set_state;
 
-int rotating(){
+  if(set == PINSETB){
+    set_state = PINB;
+  }else if(set == PINSETC){
+    set_state = PINC;
+  }else if(set == PINSETD){
+    set_state = PIND; 
+  }else {
+    set_state = -1; 
+  }
+
+  return set_state;
+  
+}
+
+int rotating(void){
 
   return state;
 
 }
 
-// interup service routine
-ISR(TIMER1_COMPA_vect){
+void poll(void){
 
-  int A = bit_is_clear(PINC,PINC1);
-  int B = bit_is_clear(PINC,PINC0);
+  int new_state_a =  get_pins(pin_set_a);
+  int new_state_b =  get_pins(pin_set_b);
 
+  int A = bit_is_clear(new_state_a,PINC1);
+  int B = bit_is_clear(new_state_b,PINC0);
 
   if ( ! A && ! B ){
     state = NO_ROT;
@@ -63,6 +75,13 @@ ISR(TIMER1_COMPA_vect){
   } else if (state == NO_ROT && B){
     state = LEFT; 
   }
+
+}
+
+// interup service routine
+ISR(TIMER1_COMPA_vect){
+
+  poll();
 
 }
 

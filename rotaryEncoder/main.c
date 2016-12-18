@@ -1,6 +1,5 @@
 
 #include <avr/io.h>
-#include <util/delay.h>
 #include <stdlib.h>
 
 #include "liblcd.h"
@@ -9,13 +8,18 @@
 int main(void)
 {
 
+  // Flashy debug button 
   DDRC |= 1 << PINC2;
-  
+ 
+  // our heroic rotary pins
+  DDRC &= (1 << PINC1);
+  DDRC &= (1 << PINC0);
+
   int myNum = 50;
 
   initialize_lcd();
 
-  initialize_rot(DDRC, PORTC, PINC1, DDRC, PORTC, PINC0);
+  initialize_rot(PINSETC, PINC1, PINSETC, PINC0);
 
   send_a_string("Turn to + or -!");
 
