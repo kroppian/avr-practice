@@ -11,7 +11,8 @@
 #define PINSETC 1
 #define PINSETD 2
 
-int intialize_rot(int porta, int pina, int portb, int pinb);
+void intialize_rot(int new_pin_seta, int new_pina, 
+     int new_pin_setb, int new_pinb);
 
 int rotating(void);
 
