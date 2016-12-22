@@ -27,8 +27,8 @@ void initialize_rot(int new_pin_seta, int new_pina,
 
   sei();
 
-  //     ---- 64 prescaler ------  waveform generation mode
-  TCCR2B |= 1 << CS10 | 1 << CS11 | 1<<WGM12;
+  TCCR2B |= 1 << CS11 | 1<<WGM12;
+  TCCR2B &=  ~(1 << CS10);
   // timer interupt mask
   TIMSK2 |= 1<< OCIE1A;
 
