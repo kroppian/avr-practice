@@ -28,11 +28,11 @@ void initialize_rot(int new_pin_seta, int new_pina,
   sei();
 
   //     ---- 64 prescaler ------  waveform generation mode
-  TCCR1B |= 1 << CS10 | 1 << CS11 | 1<<WGM12;
+  TCCR2B |= 1 << CS10 | 1 << CS11 | 1<<WGM12;
   // timer interupt mask
-  TIMSK1 |= 1<< OCIE1A;
+  TIMSK2 |= 1<< OCIE1A;
 
-  OCR1A = 100;
+  OCR2A = 100;
 
 }
 
@@ -79,7 +79,7 @@ void poll(void){
 }
 
 // interup service routine
-ISR(TIMER1_COMPA_vect){
+ISR(TIMER2_COMPA_vect){
 
   poll();
 
