@@ -56,26 +56,11 @@ ISR(ADC_vect){
 
   // Lord, forgive me for this hacky mess. This is a proof of concept and it's not pretty
   // all spaces as filler
-  char buffer[3] = {'0', '0', '0'};
   int myNum = ADCH;
-  int i;
 
-  if(myNum == 0) {
-    buffer[3] = '0';
-  }else{
-    i = 0;
-    while(myNum != 0){
-      buffer[2 - i] = (myNum % 10) + '0';
-      myNum = myNum / 10;
-      i++;
-    }
-  }
+  uart_send(myNum); 
 
-  for(i = 0; i < 3; i++){
-    uart_send(buffer[i]);
-  }
-
-  uart_send('\r'); 
+  
 
   // Turn on the ADC filter
   ADCSRA |= (1 << ADSC);
